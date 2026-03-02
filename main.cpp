@@ -7,13 +7,16 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <limits>
+#include <ios>
 
 using namespace std;
 
 // Define heap struct
 struct Heap {
-  int size;
-  int arr[size]{};
+  int size; // number of elements it can hold
+  int arr[size]{}; // arr of keys
+  int count; // actual number of elements
 };
 
 
@@ -25,8 +28,10 @@ void deleteKey(int i); // dequeue
 void printHeap();
 
 int main() {
-  // Initialize heap
+  // Initialize heap and size var
   Heap* heap = new Heap();
+  int heapSize = 100;
+  heap->size = heapSize;
 
   // Define const var for commands
   const string MANUAL = "MANUAL";
@@ -58,7 +63,22 @@ int main() {
     } else {
       // call appropriate method or exit program
       if (userCommand == MANUAL) {
+	// read in up to 100 int and store in heap arr
+	cout << "Enter up to " << heap->size
+	     <<" integers separated by spaces." << endl;
 
+	int count = 0;
+	while ((cin >> arr[count]) && (count < 100)) {
+	  count++;
+	}
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // clear buffer
+	heap->count = count; // update heap var
+
+	// print out inputted val
+	for (int i = 0; i < heap->size; i++) {
+	  cout << arr[i] << " ";
+	}
+	cout << endl;
       } else if (userCommand == FILE) {
 
       } else if (userCommand == MAX) {
