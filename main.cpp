@@ -12,8 +12,8 @@ using namespace std;
 
 // Define heap struct
 struct Heap {
-  int arr[];
   int size;
+  int arr[size]{};
 };
 
 
@@ -25,7 +25,54 @@ void deleteKey(int i); // dequeue
 void printHeap();
 
 int main() {
+  // Initialize heap
+  Heap* heap = new Heap();
 
+  // Define const var for commands
+  const string MANUAL = "MANUAL";
+  const string FILE = "FILE";
+  const string MAX = "MAX";
+  const string DELETE = "DELETE";
+  const string PRINT = "PRINT";
+  const string QUIT = "QUIT";
+
+  string userCommand = ""; // Declare str for user input
+
+  // Continue prompting user for input until QUIT command
+  bool keepModifying = true;
+  while (keepModifying) {
+    // read in user input
+    cout << "Enter a command (MANUAL, FILE, MAX, DELETE, PRINT, QUIT): ";
+    getline(cin, userCommand);
+
+    // convert input to uppercase for comparison
+    for (int i = 0; i < userCommand.size(); i++) {
+      userCommand[i] = toupper(userCommand[i]);
+    }
+    
+    // validate input
+    if ((userCommand == MANUAL) && (userCommand == FILE) &&
+	(userCommand == MAX) && (userCommand == DELETE) &&
+	(userCommand == PRINT) && (userCommand == QUIT)) {
+      cout << "Please input MANUAL, FILE, MAX, DELETE, PRINT, or QUIT." << endl;
+    } else {
+      // call appropriate method or exit program
+      if (userCommand == MANUAL) {
+
+      } else if (userCommand == FILE) {
+
+      } else if (userCommand == MAX) {
+
+      } else if (userCommand == DELETE) {
+
+      } else if (userCommand == PRINT) {
+
+      } else if (userCommand == QUIT) {
+
+      }
+    }
+  }
+  
   return 0;
 }
 
