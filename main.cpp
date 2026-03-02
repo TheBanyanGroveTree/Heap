@@ -97,13 +97,23 @@ int main() {
 	ifstream file("numbers.txt"); // open file
 
 	// Read in space separated numbers
+	int count = 0;
 	for (int i = 0; i < heap->size; i++) {
 	  file >> heap->arr[i];
+	  count++;
 	}
+	heap->count = count;
 
 	file.close();
 
-	heapify(heap, 0);
+	for (int i = 0; i < heap->size; i++) {
+	  cout << heap->arr[i] << " ";
+	}
+	
+	// heapify from last parent node upward
+	for (int i = (heap->count / 2) - 1; i >= 0; i--) {
+	  heapify(heap, i);
+	}
 	
       } else if (userCommand == MAX) {
 	cout << extractMax(heap) << endl;
@@ -202,9 +212,12 @@ int deleteKey(Heap*& heap, int i) {
 
 // Delete all numbers from heap and output
 void deleteAll(Heap* heap) {
-  for (int i = 0; i < heap->size; i++) {
-    deleteKey(heap, i);
+  int key = 0;
+  for (int i = 0; i < heap->count; i++) {
+    key = extractMax(heap);
+    cout << key << " ";
   }
+  cout << endl;
 }
 
 // Traverse heap recursively to print sideways
