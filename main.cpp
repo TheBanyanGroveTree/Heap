@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -20,7 +21,6 @@ struct Heap {
 void heapify(int i);
 void insert(int key); // enqueue
 int extractMax();
-int getMax();
 void deleteKey(); // dequeue
 void printHeap();
 
@@ -56,4 +56,38 @@ void heapify(int i) {
     // recursively heapify to subtree
     heapify(largest);
   }
+}
+
+// Insert new key into heap
+void insert(int key) {
+  arr[size - 1] = key; // add to end of arr
+  int i = size - 1; // initial index = last element of arr
+
+  // while key is greater than parent and i is not root
+  // iteratively swap key with parent and update i to parent
+  while ((i != 0) && (arr[(i - 1) / 2] < arr[i])) {
+    swap(arr[i], arr[(i - 1) / 2]);
+    i = (i - 1) / 2;
+  }
+}
+
+// Extract maximum element (top priority) from heap
+int extractMax() {
+  // throw error if heap is empty
+  if (size <= 0) {
+    cout << "Heap underflow" << endl;
+  }
+  // remove and return single element
+  if (size == 1) {
+    int root = arr[0];
+    arr[size - 1] = NULL;
+    return root;
+  }
+
+  int root = arr[0]; // store max in temp var
+  arr[0] = arr[size - 1]; // replace root with last element
+  arr[size - 1] = NULL; // del last element
+  heapify(0); // restore heap property
+
+  return root;
 }
