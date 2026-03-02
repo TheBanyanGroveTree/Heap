@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <sstream>
 #include <limits>
 #include <ios>
 #include <fstream>
@@ -27,7 +28,7 @@ void insert(Heap*& heap, int key); // enqueue
 int extractMax(Heap*& heap);
 int deleteKey(Heap*& heap, int i); // dequeue
 void deleteAll(Heap* heap);
-void printHeap(Heap* heap);
+void printHeap(Heap* heap, int index, int depth);
 
 int main() {
   // Initialize heap and size var
@@ -56,29 +57,42 @@ int main() {
     }
     
     // validate input
-    if ((userCommand == MANUAL) && (userCommand == FILE) &&
-	(userCommand == MAX) && (userCommand == DELETE) &&
-	(userCommand == PRINT) && (userCommand == QUIT)) {
+    if ((userCommand != MANUAL) && (userCommand != FILE) &&
+	(userCommand != MAX) && (userCommand != DELETE) &&
+	(userCommand != PRINT) && (userCommand != QUIT)) {
       cout << "Please input MANUAL, FILE, MAX, DELETE, PRINT, or QUIT." << endl;
     } else {
       // call appropriate method or exit program
       if (userCommand == MANUAL) {
 	// read in up to 100 int and store in heap arr
 	cout << "Enter up to " << heap->size
-	     <<" integers separated by spaces." << endl;
+	     <<" integers separated by spaces."
+	     << " Hit enter to stop inputting numbers." << endl;
 
+	string inputLine = "";
+	getline(cin, inputLine); // read entire line
+
+	// parse line
+	stringstream ss(inputLine);	
 	int count = 0;
-	while ((cin >> heap->arr[count]) && (count < 100)) {
+	while ((ss >> heap->arr[count]) && (count < 100)) {
 	  count++;
 	}
-	cin.ignore(numeric_limits<streamsize>::max(), '\n'); // clear buffer
 	heap->count = count; // update heap var
 
+	// heapify from last parent node upward
+	for (int i = (heap->count / 2) - 1; i >= 0; i--) {
+	  heapify(heap, i);
+	}
+	
+	/*
 	// print out inputted val
 	for (int i = 0; i < heap->size; i++) {
 	  cout << heap->arr[i] << " ";
 	}
 	cout << endl;
+	*/
+	
       } else if (userCommand == FILE) {
 	ifstream file("numbers.txt"); // open file
 
@@ -88,12 +102,15 @@ int main() {
 	}
 
 	file.close();
+
+	heapify(heap, 0);
+	
       } else if (userCommand == MAX) {
 	cout << extractMax(heap) << endl;
       } else if (userCommand == DELETE) {
 	deleteAll(heap);
       } else if (userCommand == PRINT) {
-	printHeap(heap);
+	printHeap(heap, 0, 0);
       } else if (userCommand == QUIT) {
 	delete heap; // delete dynamically allocated mem
 	keepModifying = false;
@@ -134,7 +151,8 @@ void heapify(Heap*& heap, int i) {
 
 // Insert new key into heap
 void insert(Heap*& heap, int key) {
-  heap->arr[heap->count - 1] = key; // add to end of arr
+  heap->arr[heap->count] = key; // add to end of arr
+  heap->count++;
   int i = heap->count - 1; // initial index = last element of arr
 
   // while key is greater than parent and i is not root
@@ -155,12 +173,14 @@ int extractMax(Heap*& heap) {
   if (heap->count == 1) {
     int root = heap->arr[0];
     heap->arr[heap->count - 1] = 0;
+    heap->count--;
     return root;
   }
 
   int root = heap->arr[0]; // store max in temp var
   heap->arr[0] = heap->arr[heap->count - 1]; // replace root with last element
   heap->arr[heap->count - 1] = 0; // del last element
+  heap->count--; // decrease count
   heapify(heap, 0); // restore heap property
 
   return root;
@@ -187,10 +207,23 @@ void deleteAll(Heap* heap) {
   }
 }
 
-// Print heap elements
-void printHeap(Heap* heap) {
-  for (int val : heap->arr) {
-    cout << val << " ";
+// Traverse heap recursively to print sideways
+void printHeap(Heap* heap, int index, int depth) {
+  // Base case
+  if (index >= heap->count) {
+    return;
   }
-  cout << endl;
+
+  // Print left child first
+  // depth = how far node is from root (num edges)
+  printHeap(heap, (2 * index + 1), (depth + 1));
+
+  // Print current node with indentation
+  for (int i = 0; i < depth; i++) {
+    cout << "\t";
+  }
+  cout << heap->arr[index] << endl;
+
+  // print right child
+  printHeap(heap, (2 * index + 2), (depth + 1));
 }
