@@ -21,7 +21,7 @@ struct Heap {
 void heapify(int i);
 void insert(int key); // enqueue
 int extractMax();
-void deleteKey(); // dequeue
+void deleteKey(int i); // dequeue
 void printHeap();
 
 int main() {
@@ -76,6 +76,7 @@ int extractMax() {
   // throw error if heap is empty
   if (size <= 0) {
     cout << "Heap underflow" << endl;
+    return;
   }
   // remove and return single element
   if (size == 1) {
@@ -90,4 +91,26 @@ int extractMax() {
   heapify(0); // restore heap property
 
   return root;
+}
+
+// Delete key at given index
+void deleteKey(int i) {
+  // throw error if index out of bounds
+  if (i >= size) {
+    cout << "Out of bounds" << endl;
+    return;
+  }
+
+  arr[i] = arr[size - 1]; // replace key with last element
+  arr[size - 1] = NULL; // del last element
+  heapify(i); // restore heap property
+}
+
+
+// Print heap elements
+void printHeap() {
+  for (int val : arr) {
+    cout << val << " ";
+  }
+  cout << endl;
 }
