@@ -26,13 +26,13 @@ struct Heap {
 void heapify(Heap*& heap, int i);
 void insert(Heap*& heap, int key); // enqueue
 int extractMax(Heap*& heap);
-int deleteKey(Heap*& heap, int i); // dequeue
 void deleteAll(Heap* heap);
 void printHeap(Heap* heap, int index, int depth);
 
 int main() {
   // Initialize heap and size var
   Heap* heap = new Heap();
+  heap->count = 0;
 
   // Define const var for commands
   const string MANUAL = "MANUAL";
@@ -73,50 +73,30 @@ int main() {
 	getline(cin, inputLine); // read entire line
 
 	// parse line
-	stringstream ss(inputLine);	
-	int count = 0;
-	while ((ss >> heap->arr[count]) && (count < 100)) {
-	  count++;
+	stringstream ss(inputLine);
+	int key = 0; // don't write directly into arr
+	while ((ss >> key) && (heap->count < 100)) {
+	  insert(heap, key);
 	}
-	heap->count = count; // update heap var
 
-	// heapify from last parent node upward
-	for (int i = (heap->count / 2) - 1; i >= 0; i--) {
-	  heapify(heap, i);
-	}
-	
-	/*
-	// print out inputted val
-	for (int i = 0; i < heap->size; i++) {
-	  cout << heap->arr[i] << " ";
-	}
-	cout << endl;
-	*/
-	
       } else if (userCommand == FILE) {
 	ifstream file("numbers.txt"); // open file
 
 	// Read in space separated numbers
-	int count = 0;
-	for (int i = 0; i < heap->size; i++) {
-	  file >> heap->arr[i];
-	  count++;
+	int key = 0;
+	while ((file >> key) && (heap->count < 100)) {
+	  insert(heap, key);
 	}
-	heap->count = count;
 
 	file.close();
-
-	for (int i = 0; i < heap->size; i++) {
-	  cout << heap->arr[i] << " ";
-	}
-	
-	// heapify from last parent node upward
-	for (int i = (heap->count / 2) - 1; i >= 0; i--) {
-	  heapify(heap, i);
-	}
-	
+		
       } else if (userCommand == MAX) {
-	cout << extractMax(heap) << endl;
+	// check if heap is empty
+	if (heap->count == 0) {
+	  cout << "Heap is empty." << endl;
+	} else {
+	  cout << extractMax(heap) << endl;
+	}
       } else if (userCommand == DELETE) {
 	deleteAll(heap);
       } else if (userCommand == PRINT) {
@@ -130,6 +110,7 @@ int main() {
   
   return 0;
 }
+
 
 // Maintain heap property
 void heapify(Heap*& heap, int i) {
@@ -159,6 +140,7 @@ void heapify(Heap*& heap, int i) {
   }
 }
 
+
 // Insert new key into heap
 void insert(Heap*& heap, int key) {
   heap->arr[heap->count] = key; // add to end of arr
@@ -173,12 +155,9 @@ void insert(Heap*& heap, int key) {
   }
 }
 
+
 // Extract maximum element (top priority) from heap
 int extractMax(Heap*& heap) {
-  // throw error if heap is empty
-  if (heap->count <= 0) {
-    throw underflow_error("Heap underflow");
-  }
   // remove and return single element
   if (heap->count == 1) {
     int root = heap->arr[0];
@@ -196,29 +175,16 @@ int extractMax(Heap*& heap) {
   return root;
 }
 
-// Delete key at given index
-int deleteKey(Heap*& heap, int i) {
-  // throw error if index out of bounds
-  if (i >= heap->count) {
-    throw out_of_range("Invalid index");
-  }
-
-  heap->arr[i] = heap->arr[heap->count - 1]; // replace key with last element
-  heap->arr[heap->count - 1] = 0; // del last element
-  heapify(heap, i); // restore heap property
-
-  return heap->arr[i];
-}
 
 // Delete all numbers from heap and output
 void deleteAll(Heap* heap) {
-  int key = 0;
-  for (int i = 0; i < heap->count; i++) {
-    key = extractMax(heap);
-    cout << key << " ";
+  int count = heap->count; // set before extractMax alters
+  for (int i = 0; i < count; i++) {
+    cout << extractMax(heap) << " ";
   }
   cout << endl;
 }
+
 
 // Traverse heap recursively to print sideways
 void printHeap(Heap* heap, int index, int depth) {
